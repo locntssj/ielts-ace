@@ -2,7 +2,7 @@
 
 import mammoth from 'mammoth';
 import { displayAIFeedback, type DisplayAIFeedbackOutput, type DisplayAIFeedbackInput } from '@/ai/flows/display-ai-feedback';
-import { createClient, DeepgramClient, PrerecordedTranscriptionOptions } from '@deepgram/sdk';
+import { createClient, DeepgramClient } from '@deepgram/sdk';
 import { gradeSpeaking, type GradeSpeakingOutput } from '@/ai/flows/grade-speaking';
 
 export async function parseDocx(formData: FormData): Promise<{ text: string; error: string | null; fileName: string }> {
@@ -40,7 +40,6 @@ export async function getAIGrading(essay: string, taskType: 'task1' | 'task2'): 
     return { feedback: null, error: 'Failed to get AI grading. Please try again.' };
   }
 }
-
 
 export async function transcribeAudio(formData: FormData): Promise<{ transcript: string; error: string | null }> {
   const file = formData.get('file') as File;
