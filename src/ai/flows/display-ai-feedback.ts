@@ -58,9 +58,9 @@ For each sentence:
 - If there are grammar, vocabulary, logic or structure problems:
   - **Highlight the problematic part using HTML**:
     - Wrap error in:  
-      `<span style="color: red; font-weight: bold">[wrong phrase]</span>`
+      \`<span style="color: red; font-weight: bold">[wrong phrase]</span>\`
     - Right after it, add a correction note:  
-      `<span style="color: green; font-style: italic">([Correction] ...)</span>`
+      \`<span style="color: green; font-style: italic">([Correction] ...)</span>\`
 - If the sentence is fine, leave it unchanged.
 
 ---
@@ -72,7 +72,7 @@ At the end, return:
 1. The **full corrected essay in annotated HTML**
 2. A separate **band score summary block**, formatted like:
 
-```html
+\`\`\`html
 <div>
   <p><strong>Band Scores:</strong></p>
   <ul>
@@ -84,7 +84,7 @@ At the end, return:
   </ul>
   <p>Final comments: ...</p>
 </div>
-```
+\`\`\`
 
 Here is the essay to grade:\n{{{essay}}}
 `,
