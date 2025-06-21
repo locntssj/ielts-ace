@@ -1,10 +1,11 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import AppHeader from '@/components/app/header';
 
 export const metadata: Metadata = {
   title: 'IELTS Ace',
-  description: 'AI-powered IELTS essay grading',
+  description: 'AI-powered IELTS essay grading and speaking evaluation',
 };
 
 export default function RootLayout({
@@ -21,7 +22,14 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {children}
+        <div className="flex flex-col min-h-screen bg-background text-foreground">
+          <AppHeader />
+          <main className="flex-grow container mx-auto px-4 py-8">
+            <div className="max-w-4xl mx-auto flex flex-col gap-8">
+              {children}
+            </div>
+          </main>
+        </div>
         <Toaster />
       </body>
     </html>

@@ -81,4 +81,7 @@
   body {
     @apply bg-background text-foreground;
   }
+  .highlight {
+    @apply text-destructive font-semibold;
+  }
 }
