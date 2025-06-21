@@ -3,14 +3,13 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mic, FileText, Link as LinkIcon } from 'lucide-react';
-import AudioUploader from '@/components/app/audio-uploader';
+import { FileText, Link as LinkIcon } from 'lucide-react';
 import SpeakingFeedbackDisplay from '@/components/app/speaking-feedback-display';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { transcribeAudio, getSpeakingGrading, transcribeUrl } from '@/app/actions';
+import { getSpeakingGrading, transcribeUrl } from '@/app/actions';
 import type { GradeSpeakingOutput } from '@/ai/flows/grade-speaking';
 import { Loader2, Sparkles } from 'lucide-react';
 
@@ -22,28 +21,6 @@ export default function SpeakingPage() {
     const [transcript, setTranscript] = useState<string>('');
     const [audioUrl, setAudioUrl] = useState<string>('');
     const { toast } = useToast();
-
-    const handleAudioUpload = async (formData: FormData) => {
-        setIsLoading(true);
-        setFeedback(null);
-        setLoadingMessage('Transcribing audio...');
-
-        const transcribeResult = await transcribeAudio(formData);
-        if (transcribeResult.error) {
-            toast({ variant: "destructive", title: "Transcription Failed", description: transcribeResult.error });
-            setIsLoading(false);
-            return;
-        }
-
-        setLoadingMessage('Grading transcript...');
-        const gradeResult = await getSpeakingGrading(transcribeResult.transcript);
-        if (gradeResult.error) {
-            toast({ variant: "destructive", title: "Grading Failed", description: gradeResult.error });
-        } else if (gradeResult.feedback) {
-            setFeedback(gradeResult.feedback);
-        }
-        setIsLoading(false);
-    };
 
     const handleUrlSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -120,18 +97,14 @@ export default function SpeakingPage() {
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline">IELTS Speaking Evaluation</CardTitle>
-                <CardDescription>Upload an audio file, provide a URL, or paste a transcript to get AI-powered feedback.</CardDescription>
+                <CardDescription>Provide a URL to an audio file or paste a transcript to get AI-powered feedback.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Tabs defaultValue="audio">
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="audio"><Mic className="mr-2 h-4 w-4" /> Upload Audio</TabsTrigger>
+                <Tabs defaultValue="url">
+                    <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="url"><LinkIcon className="mr-2 h-4 w-4" /> From URL</TabsTrigger>
                         <TabsTrigger value="transcript"><FileText className="mr-2 h-4 w-4" /> Paste Transcript</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="audio" className="mt-4">
-                        <AudioUploader onFileUpload={handleAudioUpload} />
-                    </TabsContent>
                     <TabsContent value="url" className="mt-4">
                         <form onSubmit={handleUrlSubmit} className="space-y-4">
                            <Input
