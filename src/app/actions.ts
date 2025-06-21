@@ -92,6 +92,47 @@ export async function transcribeAudio(formData: FormData): Promise<{ transcript:
   }
 }
 
+export async function transcribeUrl(url: string): Promise<{ transcript: string; error: string | null }> {
+  if (!url) {
+    return { transcript: '', error: 'No URL provided.' };
+  }
+
+  try {
+    const deepgramApiKey = process.env.DEEPGRAM_API_KEY;
+    if (!deepgramApiKey) {
+      return { transcript: '', error: 'Deepgram API key is not configured.' };
+    }
+
+    const deepgram: DeepgramClient = createClient(deepgramApiKey);
+
+    const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
+      { url },
+      {
+        model: 'nova-3',
+        smart_format: true,
+      }
+    );
+
+    if (error) {
+      console.error('Deepgram API Error:', error);
+      return { transcript: '', error: `Deepgram error: ${error.message}` };
+    }
+
+    const transcript = result?.results?.channels?.[0]?.alternatives?.[0]?.transcript;
+
+    if (!transcript) {
+      console.error('Deepgram Result Invalid or Empty Transcript:', result);
+      return { transcript: '', error: 'Could not extract a transcript from the URL. The audio might be silent, corrupted, or inaccessible.' };
+    }
+
+    return { transcript, error: null };
+  } catch (e) {
+    console.error('Transcription process failed:', e);
+    const errorMessage = e instanceof Error ? e.message : 'An unknown server error occurred.';
+    return { transcript: '', error: `Failed to process audio from URL: ${errorMessage}` };
+  }
+}
+
 export async function getSpeakingGrading(transcript: string): Promise<{ feedback: GradeSpeakingOutput | null; error: string | null }> {
   if (!transcript) {
     return { feedback: null, error: 'Transcript is empty.' };
