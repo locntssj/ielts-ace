@@ -38,46 +38,29 @@ const gradeSpeakingPrompt = ai.definePrompt({
   name: 'gradeSpeakingPrompt',
   input: {schema: GradeSpeakingInputSchema},
   output: {schema: GradeSpeakingOutputSchema},
-  prompt: `You are an IELTS Speaking examiner.
+  prompt: `You are an expert IELTS Speaking examiner. Your task is to analyze a student's speaking transcript and provide a structured evaluation in JSON format.
 
-Given the following transcript of a speaking response by a student, do the following:
+**Instructions:**
 
-1. Score the answer based on the 4 official IELTS Speaking criteria:
-- Fluency and Coherence
-- Lexical Resource
-- Grammatical Range and Accuracy
-- Pronunciation (assume standard delivery based on text)
+1.  **Evaluate and Score:** Assess the transcript based on the four official IELTS Speaking criteria:
+    *   **Fluency and Coherence:** Score from 1-9.
+    *   **Lexical Resource:** Score from 1-9.
+    *   **Grammatical Range and Accuracy:** Score from 1-9.
+    *   **Pronunciation:** Score from 1-9. Assume standard delivery from the text.
 
-2. Highlight language issues in the transcript:
-- Wrap each error (grammar, vocabulary, or cohesion issue) in \`<span class='highlight'>\` tags.
-- Right after each error, insert a correction or explanation in parentheses ( ).
-- Do not alter correct parts of the sentence.
+2.  **Provide Feedback:** For each of the four criteria, write a brief, constructive feedback paragraph.
 
-3. Return ONLY a single valid JSON object that adheres to the schema. Do not include any other text, formatting, or explanations before or after the JSON object.
+3.  **Annotate Transcript:**
+    *   Review the original transcript sentence by sentence.
+    *   If you find an error (grammar, vocabulary, etc.), wrap the incorrect part in \`<span class="highlight">\` tags.
+    *   Immediately following the closing \`</span>\` tag, add a brief correction or explanation in parentheses, like \`(correction)\`.
+    *   Do not change any parts of the transcript that are correct.
 
-Example format:
-\`\`\`json
-{
-  "score": {
-    "fluency": 6.5,
-    "lexical": 6.0,
-    "grammar": 5.5,
-    "pronunciation": 6.0
-  },
-  "feedback": {
-    "fluency": "Good flow but noticeable hesitation.",
-    "lexical": "Some topic-relevant vocabulary, but limited variety.",
-    "grammar": "Frequent verb tense and agreement errors.",
-    "pronunciation": "Assumed understandable but not expressive."
-  },
-  "annotated_transcript": "Well I <span class='highlight'>have saw</span> (should be 'have seen') many cultures..."
-}
-\`\`\`
+**Output Format:**
+You **MUST** return your entire response as a single, valid JSON object. Do not include any text, markdown formatting, or explanations outside of the JSON structure.
 
-Here is the transcript to grade:
-"""
+The transcript to grade is:
 {{{$input}}}
-"""
 `,
 });
 
