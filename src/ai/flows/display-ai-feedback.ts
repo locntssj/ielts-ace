@@ -60,8 +60,8 @@ For each sentence:
 - If there are problems (grammar, vocabulary, cohesion, formality):
   - Highlight the incorrect part using HTML:
     \`\`\`html
-    <span style="color: red; font-weight: bold">wrong phrase</span>
-    <span style="color: green; font-style: italic"> (...)</span>
+    <span style="color: red; font-weight: bold">[wrong phrase]</span>
+    <span style="color: green; font-style: italic">(Correction: ...)</span>
     \`\`\`
 - If the sentence is acceptable, leave it unchanged.
 
