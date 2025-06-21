@@ -38,6 +38,26 @@ const gradeSpeakingPrompt = ai.definePrompt({
   name: 'gradeSpeakingPrompt',
   input: {schema: GradeSpeakingInputSchema},
   output: {schema: GradeSpeakingOutputSchema},
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_NONE',
+      },
+    ],
+  },
   prompt: `You are an expert IELTS Speaking examiner. Your task is to analyze a student's speaking transcript and provide a structured evaluation.
 
 **Instructions:**
@@ -62,7 +82,6 @@ You **MUST** return your entire response as a single, valid JSON object that str
 
 Here is an example of the required JSON format:
 
-\`\`\`json
 {
   "score": {
     "fluency": 6.5,
@@ -78,7 +97,6 @@ Here is an example of the required JSON format:
   },
   "annotated_transcript": "Well I <span class='highlight'>have saw</span> (should be 'have seen') many cultures..."
 }
-\`\`\`
 
 The transcript to grade is:
 {{{$input}}}

@@ -31,6 +31,26 @@ const promptTask1 = ai.definePrompt({
   name: 'displayAIFeedbackPromptTask1',
   input: {schema: DisplayAIFeedbackInputSchema},
   output: {schema: DisplayAIFeedbackOutputSchema},
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_NONE',
+      },
+    ],
+  },
   prompt: `You are an IELTS Writing examiner.
 
 Please analyze the following IELTS Writing Task 1 (Academic) response. Follow these instructions strictly:
@@ -101,6 +121,26 @@ const promptTask2 = ai.definePrompt({
   name: 'displayAIFeedbackPromptTask2',
   input: {schema: DisplayAIFeedbackInputSchema},
   output: {schema: DisplayAIFeedbackOutputSchema},
+    config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_NONE',
+      },
+    ],
+  },
   prompt: `You are an IELTS Writing examiner.
 
 Please analyze the following IELTS Writing Task 2 essay in detail. Follow these instructions strictly:
