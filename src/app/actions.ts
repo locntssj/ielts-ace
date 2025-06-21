@@ -65,8 +65,9 @@ export async function transcribeAudio(formData: FormData): Promise<{ transcript:
     const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
         source,
         {
-            model: 'nova-2',
+            model: 'nova-2-general',
             smart_format: true,
+            detect_language: true,
         }
     );
 
