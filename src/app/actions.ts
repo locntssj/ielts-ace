@@ -49,41 +49,30 @@ export async function transcribeAudio(formData: FormData): Promise<{ transcript:
   }
 
   try {
-    const deepgramApiKey = process.env.DEEPGRAM_API_KEY;
-    if (!deepgramApiKey) {
-      return { transcript: '', error: 'Deepgram API key is not configured.' };
+    // Workaround for Vercel's lack of filesystem: upload to a temporary host
+    const fileIoFormData = new FormData();
+    fileIoFormData.append('file', file);
+
+    const fileIoResponse = await fetch('https://file.io', {
+      method: 'POST',
+      body: fileIoFormData,
+    });
+
+    if (!fileIoResponse.ok) {
+        const errorText = await fileIoResponse.text();
+        console.error('file.io upload failed:', errorText);
+        return { transcript: '', error: `Failed to upload audio file for processing. The hosting service responded with an error.` };
     }
 
-    const deepgram: DeepgramClient = createClient(deepgramApiKey);
-    const buffer = Buffer.from(await file.arrayBuffer());
-    
-    const source = {
-      buffer,
-      mimetype: file.type,
-    };
+    const fileIoData = await fileIoResponse.json();
 
-    const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-        source,
-        {
-            model: 'nova-2-general',
-            smart_format: true,
-            detect_language: true,
-        }
-    );
-
-    if (error) {
-        console.error('Deepgram API Error:', error);
-        return { transcript: '', error: 'Transcription failed. Please ensure the audio file is valid, not silent, and in a supported format.' };
-    }
-    
-    const transcript = result?.results?.channels?.[0]?.alternatives?.[0]?.transcript;
-
-    if (!transcript) {
-        console.error('Deepgram Result Invalid or Empty Transcript:', result);
-        return { transcript: '', error: 'Could not extract a transcript. The audio might be silent, corrupted, or in an unsupported format.' };
+    if (!fileIoData.success || !fileIoData.link) {
+        console.error('Invalid response from file.io:', fileIoData);
+        return { transcript: '', error: 'Failed to get a temporary link for the audio file.' };
     }
 
-    return { transcript, error: null };
+    // Use the temporary URL to transcribe with Deepgram, which reuses the existing URL transcription logic
+    return await transcribeUrl(fileIoData.link);
 
   } catch (e) {
     console.error('Transcription process failed:', e);
