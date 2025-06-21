@@ -57,12 +57,17 @@ export async function transcribeAudio(formData: FormData): Promise<{ transcript:
     const deepgram: DeepgramClient = createClient(deepgramApiKey);
     const buffer = Buffer.from(await file.arrayBuffer());
     
+    const source = {
+      buffer,
+      mimetype: file.type,
+    };
+
     const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-        buffer,
+        source,
         {
             model: 'nova-2',
             smart_format: true,
-        } as PrerecordedTranscriptionOptions
+        }
     );
 
     if (error) {
