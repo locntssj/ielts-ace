@@ -61,7 +61,7 @@ For each sentence:
   - Highlight the incorrect part using HTML:
     \`\`\`html
     <span style="color: red; font-weight: bold">[wrong phrase]</span>
-    <span style="color: green; font-style: italic">(Correction: ...)</span>
+    <span style="color: green; font-style: italic">(...)</span>
     \`\`\`
 - If the sentence is acceptable, leave it unchanged.
 
