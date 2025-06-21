@@ -2,11 +2,12 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, RefreshCw, FileDown, Loader2 } from 'lucide-react';
 import type { GradeSpeakingOutput } from '@/ai/flows/grade-speaking';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 type SpeakingFeedbackDisplayProps = {
   feedback: GradeSpeakingOutput;
@@ -22,6 +23,8 @@ const scoreLabels = {
 
 export default function SpeakingFeedbackDisplay({ feedback, onReset }: SpeakingFeedbackDisplayProps) {
     const [showCorrections, setShowCorrections] = useState(true);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const { toast } = useToast();
 
     const renderTranscript = () => {
         let transcript = feedback.annotated_transcript;
@@ -30,6 +33,43 @@ export default function SpeakingFeedbackDisplay({ feedback, onReset }: SpeakingF
         }
         return transcript;
     };
+
+    const handleDownload = async () => {
+        setIsDownloading(true);
+        try {
+          const response = await fetch('/api/download-speaking', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ feedback }),
+          });
+    
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to generate document.');
+          }
+    
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ielts-speaking-feedback_graded.docx`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+          
+        } catch (error) {
+          console.error(error);
+          const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+          toast({
+            variant: "destructive",
+            title: "Download Failed",
+            description: `Could not generate the .docx file. ${errorMessage}`,
+          });
+        } finally {
+          setIsDownloading(false);
+        }
+      };
 
     return (
         <Card className="w-full animate-in fade-in duration-500">
@@ -80,10 +120,23 @@ export default function SpeakingFeedbackDisplay({ feedback, onReset }: SpeakingF
                     </ScrollArea>
                 </div>
             </CardContent>
-            <CardFooter className="flex justify-end">
-                <Button variant="outline" onClick={onReset}>
+            <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <Button variant="outline" onClick={onReset} className="w-full sm:w-auto">
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Try Again
+                </Button>
+                <Button onClick={handleDownload} disabled={isDownloading} size="lg" className="w-full sm:w-auto">
+                  {isDownloading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Preparing...
+                    </>
+                  ) : (
+                    <>
+                      <FileDown className="mr-2 h-4 w-4" />
+                      Download Feedback
+                    </>
+                  )}
                 </Button>
             </CardFooter>
         </Card>
