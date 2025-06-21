@@ -71,15 +71,23 @@ export async function transcribeAudio(formData: FormData): Promise<{ transcript:
     );
 
     if (error) {
-        throw error;
+        console.error('Deepgram API Error:', error);
+        return { transcript: '', error: `Deepgram error: ${error.message}` };
     }
     
-    const transcript = result.results.channels[0].alternatives[0].transcript;
+    const transcript = result?.results?.channels?.[0]?.alternatives?.[0]?.transcript;
+
+    if (!transcript) {
+        console.error('Deepgram Result Invalid or Empty Transcript:', result);
+        return { transcript: '', error: 'Could not extract a transcript. The audio might be silent, corrupted, or in an unsupported format.' };
+    }
+
     return { transcript, error: null };
 
   } catch (e) {
-    console.error('Transcription failed:', e);
-    return { transcript: '', error: 'Failed to transcribe the audio file.' };
+    console.error('Transcription process failed:', e);
+    const errorMessage = e instanceof Error ? e.message : 'An unknown server error occurred.';
+    return { transcript: '', error: `Failed to process audio file: ${errorMessage}` };
   }
 }
 
