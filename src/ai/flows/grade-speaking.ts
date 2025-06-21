@@ -43,19 +43,41 @@ const gradeSpeakingPrompt = ai.definePrompt({
 Given the following transcript of a speaking response by a student, do the following:
 
 1. Score the answer based on the 4 official IELTS Speaking criteria:
-Fluency and Coherence
-Lexical Resource
-Grammatical Range and Accuracy
-Pronunciation (assume standard delivery based on text)
+- Fluency and Coherence
+- Lexical Resource
+- Grammatical Range and Accuracy
+- Pronunciation (assume standard delivery based on text)
 
 2. Highlight language issues in the transcript:
-Wrap each error (grammar, vocabulary, or cohesion issue) in <span class="highlight"> tags
-Right after each error, insert a correction or explanation in parentheses ( )
-Do not alter correct parts of the sentence
+- Wrap each error (grammar, vocabulary, or cohesion issue) in \`<span class='highlight'>\` tags.
+- Right after each error, insert a correction or explanation in parentheses ( ).
+- Do not alter correct parts of the sentence.
 
-3. Return the response in this JSON format: { "score": { "fluency": 6.5, "lexical": 6.0, "grammar": 5.5, "pronunciation": 6.0 }, "feedback": { "fluency": "Good flow but noticeable hesitation.", "lexical": "Some topic-relevant vocabulary, but limited variety.", "grammar": "Frequent verb tense and agreement errors.", "pronunciation": "Assumed understandable but not expressive." }, "annotated_transcript": "Well I <span class='highlight'>have saw</span> (should be 'have seen') many cultures..." }
+3. Return ONLY a single valid JSON object that adheres to the schema. Do not include any other text, formatting, or explanations before or after the JSON object.
 
-Here is the transcript: """{{{$input}}}"""
+Example format:
+\`\`\`json
+{
+  "score": {
+    "fluency": 6.5,
+    "lexical": 6.0,
+    "grammar": 5.5,
+    "pronunciation": 6.0
+  },
+  "feedback": {
+    "fluency": "Good flow but noticeable hesitation.",
+    "lexical": "Some topic-relevant vocabulary, but limited variety.",
+    "grammar": "Frequent verb tense and agreement errors.",
+    "pronunciation": "Assumed understandable but not expressive."
+  },
+  "annotated_transcript": "Well I <span class='highlight'>have saw</span> (should be 'have seen') many cultures..."
+}
+\`\`\`
+
+Here is the transcript to grade:
+"""
+{{{$input}}}
+"""
 `,
 });
 
