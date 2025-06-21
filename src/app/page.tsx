@@ -70,7 +70,7 @@ export default function Home() {
           ) : !feedback ? (
             <EssayPreview essay={essay} onGrade={handleGradeEssay} onReset={handleReset} isGrading={isGrading} />
           ) : (
-            <FeedbackDisplay feedback={feedback} onReset={handleReset} />
+            <FeedbackDisplay feedback={feedback} fileName={essay.fileName} onReset={handleReset} />
           )}
         </div>
       </main>

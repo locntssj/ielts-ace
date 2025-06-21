@@ -3,7 +3,7 @@ import htmlToDocx from 'html-to-docx';
 
 export async function POST(req: NextRequest) {
   try {
-    const { annotatedHtml, bandScoreSummary } = await req.json();
+    const { annotatedHtml, bandScoreSummary, fileName } = await req.json();
 
     if (!annotatedHtml || !bandScoreSummary) {
       return NextResponse.json({ error: 'Missing content for DOCX generation.' }, { status: 400 });
@@ -35,9 +35,12 @@ export async function POST(req: NextRequest) {
         header: true,
     });
     
+    const baseName = fileName ? fileName.replace(/\.docx$/i, '') : 'ielts-feedback';
+    const newFileName = `${baseName}_graded.docx`;
+
     const headers = new Headers();
     headers.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    headers.set('Content-Disposition', 'attachment; filename="ielts-feedback.docx"');
+    headers.set('Content-Disposition', `attachment; filename="${newFileName}"`);
 
     return new NextResponse(fileBuffer, { headers });
   } catch (error) {

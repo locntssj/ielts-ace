@@ -10,10 +10,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 type FeedbackDisplayProps = {
   feedback: DisplayAIFeedbackOutput;
+  fileName: string;
   onReset: () => void;
 };
 
-export default function FeedbackDisplay({ feedback, onReset }: FeedbackDisplayProps) {
+export default function FeedbackDisplay({ feedback, fileName, onReset }: FeedbackDisplayProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const { toast } = useToast();
 
@@ -23,7 +24,7 @@ export default function FeedbackDisplay({ feedback, onReset }: FeedbackDisplayPr
       const response = await fetch('/api/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(feedback),
+        body: JSON.stringify({ ...feedback, fileName }),
       });
 
       if (!response.ok) {
@@ -35,7 +36,8 @@ export default function FeedbackDisplay({ feedback, onReset }: FeedbackDisplayPr
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'ielts-feedback.docx';
+      const baseName = fileName.replace(/\.docx$/i, '');
+      a.download = `${baseName}_graded.docx`;
       document.body.appendChild(a);
       a.click();
       a.remove();
