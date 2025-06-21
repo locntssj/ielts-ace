@@ -19,6 +19,7 @@ export default function Home() {
   const [feedback, setFeedback] = useState<DisplayAIFeedbackOutput | null>(null);
   const [isParsing, setIsParsing] = useState(false);
   const [isGrading, setIsGrading] = useState(false);
+  const [taskType, setTaskType] = useState<'task1' | 'task2'>('task2');
   const { toast } = useToast();
 
   const handleFileUpload = async (formData: FormData) => {
@@ -38,11 +39,11 @@ export default function Home() {
     setIsParsing(false);
   };
 
-  const handleGradeEssay = async () => {
+  const handleGradeEssay = async (selectedTaskType: 'task1' | 'task2') => {
     if (!essay?.text) return;
     setIsGrading(true);
     setFeedback(null);
-    const result = await getAIGrading(essay.text);
+    const result = await getAIGrading(essay.text, selectedTaskType);
     if (result.error) {
       toast({
         variant: "destructive",
@@ -68,7 +69,14 @@ export default function Home() {
           {!essay ? (
             <FileUploader onFileUpload={handleFileUpload} isParsing={isParsing} />
           ) : !feedback ? (
-            <EssayPreview essay={essay} onGrade={handleGradeEssay} onReset={handleReset} isGrading={isGrading} />
+            <EssayPreview 
+              essay={essay} 
+              onGrade={handleGradeEssay} 
+              onReset={handleReset} 
+              isGrading={isGrading}
+              taskType={taskType}
+              setTaskType={setTaskType}
+            />
           ) : (
             <FeedbackDisplay feedback={feedback} fileName={essay.fileName} onReset={handleReset} />
           )}

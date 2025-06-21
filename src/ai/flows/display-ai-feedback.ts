@@ -12,7 +12,8 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const DisplayAIFeedbackInputSchema = z.object({
-  essay: z.string().describe('The IELTS Writing Task 2 essay to be graded.'),
+  essay: z.string().describe('The IELTS Writing essay to be graded.'),
+  taskType: z.enum(['task1', 'task2']).describe('The type of IELTS writing task.'),
 });
 export type DisplayAIFeedbackInput = z.infer<typeof DisplayAIFeedbackInputSchema>;
 
@@ -26,8 +27,78 @@ export async function displayAIFeedback(input: DisplayAIFeedbackInput): Promise<
   return displayAIFeedbackFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'displayAIFeedbackPrompt',
+const promptTask1 = ai.definePrompt({
+  name: 'displayAIFeedbackPromptTask1',
+  input: {schema: DisplayAIFeedbackInputSchema},
+  output: {schema: DisplayAIFeedbackOutputSchema},
+  prompt: `You are an IELTS Writing examiner.
+
+Please analyze the following IELTS Writing Task 1 (Academic) response. Follow these instructions strictly:
+
+---
+
+### 1. Evaluation Criteria (Band Scores)
+
+Assess the essay based on the 4 official IELTS Writing Task 1 criteria:
+
+- **Task Achievement**
+- **Coherence and Cohesion**
+- **Lexical Resource**
+- **Grammatical Range and Accuracy**
+
+For each:
+- Give a **band score from 1 to 9**
+- Provide a **clear explanation** of why that score was given, using quotes from the essay
+
+---
+
+### 2. Sentence-by-Sentence Correction and Annotation
+
+Go through the essay **line by line**.
+
+For each sentence:
+- If there are problems (grammar, vocabulary, cohesion, formality):
+  - Highlight the incorrect part using HTML:
+    \`\`\`html
+    <span style="color: red; font-weight: bold">wrong phrase</span>
+    <span style="color: green; font-style: italic"> (...)</span>
+    \`\`\`
+- If the sentence is acceptable, leave it unchanged.
+
+You can annotate multiple errors in one sentence, if needed.
+
+Do **not** rewrite the whole essay — instead, annotate **within the original text**.
+
+---
+
+### 3. Output Format
+
+At the end, return:
+
+- The **full annotated essay as valid HTML**, preserving paragraph breaks
+- A **Band Score Summary**, like:
+
+\`\`\`html
+<div>
+  <p><strong>Band Scores:</strong></p>
+  <ul>
+    <li>Task Achievement: 6.5</li>
+    <li>Coherence and Cohesion: 6.0</li>
+    <li>Lexical Resource: 6.5</li>
+    <li>Grammatical Range and Accuracy: 5.5</li>
+    <li><strong>Overall Band: 6.0</strong></li>
+  </ul>
+  <p>Final comments: ...</p>
+</div>
+\`\`\`
+
+Here is the essay to grade:\n{{{essay}}}
+`,
+});
+
+
+const promptTask2 = ai.definePrompt({
+  name: 'displayAIFeedbackPromptTask2',
   input: {schema: DisplayAIFeedbackInputSchema},
   output: {schema: DisplayAIFeedbackOutputSchema},
   prompt: `You are an IELTS Writing examiner.
@@ -101,6 +172,7 @@ const displayAIFeedbackFlow = ai.defineFlow(
     outputSchema: DisplayAIFeedbackOutputSchema,
   },
   async input => {
+    const prompt = input.taskType === 'task1' ? promptTask1 : promptTask2;
     const {output} = await prompt(input);
     return output!;
   }

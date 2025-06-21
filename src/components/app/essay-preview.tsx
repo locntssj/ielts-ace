@@ -4,15 +4,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { FileText, Loader2, Sparkles, X } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+
 
 type EssayPreviewProps = {
   essay: { fileName: string; text: string };
-  onGrade: () => void;
+  onGrade: (taskType: 'task1' | 'task2') => void;
   onReset: () => void;
   isGrading: boolean;
+  taskType: 'task1' | 'task2';
+  setTaskType: (value: 'task1' | 'task2') => void;
 };
 
-export default function EssayPreview({ essay, onGrade, onReset, isGrading }: EssayPreviewProps) {
+export default function EssayPreview({ essay, onGrade, onReset, isGrading, taskType, setTaskType }: EssayPreviewProps) {
   const wordCount = essay.text.split(/\s+/).filter(Boolean).length;
   
   return (
@@ -40,9 +45,28 @@ export default function EssayPreview({ essay, onGrade, onReset, isGrading }: Ess
             placeholder="Your essay content will appear here..."
           />
         </ScrollArea>
+        <div className="mt-6 space-y-3">
+            <Label htmlFor="task-type" className="font-semibold text-base">Select Task Type</Label>
+            <RadioGroup
+                id="task-type"
+                value={taskType}
+                onValueChange={(value) => setTaskType(value as 'task1' | 'task2')}
+                className="flex items-center gap-6"
+                disabled={isGrading}
+            >
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="task2" id="task2" />
+                    <Label htmlFor="task2" className="cursor-pointer font-normal">Task 2</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="task1" id="task1" />
+                    <Label htmlFor="task1" className="cursor-pointer font-normal">Task 1</Label>
+                </div>
+            </RadioGroup>
+        </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button onClick={onGrade} disabled={isGrading} size="lg">
+        <Button onClick={() => onGrade(taskType)} disabled={isGrading} size="lg">
           {isGrading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

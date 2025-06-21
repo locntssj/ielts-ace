@@ -1,7 +1,7 @@
 'use server';
 
 import mammoth from 'mammoth';
-import { displayAIFeedback, type DisplayAIFeedbackOutput } from '@/ai/flows/display-ai-feedback';
+import { displayAIFeedback, type DisplayAIFeedbackOutput, type DisplayAIFeedbackInput } from '@/ai/flows/display-ai-feedback';
 
 export async function parseDocx(formData: FormData): Promise<{ text: string; error: string | null; fileName: string }> {
   try {
@@ -25,13 +25,13 @@ export async function parseDocx(formData: FormData): Promise<{ text: string; err
   }
 }
 
-export async function getAIGrading(essay: string): Promise<{ feedback: DisplayAIFeedbackOutput | null; error: string | null }> {
+export async function getAIGrading(essay: string, taskType: 'task1' | 'task2'): Promise<{ feedback: DisplayAIFeedbackOutput | null; error: string | null }> {
   if (!essay) {
     return { feedback: null, error: 'Essay text is empty.' };
   }
 
   try {
-    const feedback = await displayAIFeedback({ essay });
+    const feedback = await displayAIFeedback({ essay, taskType });
     return { feedback, error: null };
   } catch (e) {
     console.error(e);
