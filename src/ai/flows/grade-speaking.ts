@@ -10,10 +10,10 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GradeSpeakingInputSchema = z.string().describe('The IELTS Speaking transcript to be graded.');
+const GradeSpeakingInputSchema = z.string().describe('The IELTS Speaking transcript to be graded.');
 export type GradeSpeakingInput = z.infer<typeof GradeSpeakingInputSchema>;
 
-export const GradeSpeakingOutputSchema = z.object({
+const GradeSpeakingOutputSchema = z.object({
     score: z.object({
         fluency: z.number().describe('The band score for Fluency and Coherence.'),
         lexical: z.number().describe('The band score for Lexical Resource.'),
