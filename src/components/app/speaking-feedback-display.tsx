@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, RefreshCw, FileDown, Loader2 } from 'lucide-react';
 import type { GradeSpeakingOutput } from '@/ai/flows/grade-speaking';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 type SpeakingFeedbackDisplayProps = {
   feedback: GradeSpeakingOutput;
@@ -22,17 +22,8 @@ const scoreLabels = {
 };
 
 export default function SpeakingFeedbackDisplay({ feedback, onReset }: SpeakingFeedbackDisplayProps) {
-    const [showCorrections, setShowCorrections] = useState(true);
     const [isDownloading, setIsDownloading] = useState(false);
     const { toast } = useToast();
-
-    const renderTranscript = () => {
-        let transcript = feedback.annotated_transcript;
-        if (!showCorrections) {
-            transcript = transcript.replace(/\s*\([^)]+\)/g, '');
-        }
-        return transcript;
-    };
 
     const handleDownload = async () => {
         setIsDownloading(true);
@@ -105,19 +96,36 @@ export default function SpeakingFeedbackDisplay({ feedback, onReset }: SpeakingF
                 </div>
 
                 <div>
-                    <div className="flex justify-between items-center mb-3">
-                         <h3 className="text-lg font-semibold font-headline">Annotated Transcript</h3>
-                         <div className="flex items-center space-x-2">
-                            <Switch id="show-corrections" checked={showCorrections} onCheckedChange={setShowCorrections} />
-                            <Label htmlFor="show-corrections" className="text-sm">Show Corrections</Label>
-                         </div>
-                    </div>
-                    <ScrollArea className="h-80 w-full rounded-md border p-4">
-                        <div
-                            className="prose-lg max-w-none leading-relaxed"
-                            dangerouslySetInnerHTML={{ __html: renderTranscript() }}
-                        />
-                    </ScrollArea>
+                    <h3 className="text-lg font-semibold font-headline mb-3">Transcript Analysis</h3>
+                    <Tabs defaultValue="annotated">
+                        <TabsList className="grid w-full grid-cols-3">
+                            <TabsTrigger value="annotated">Annotated</TabsTrigger>
+                            <TabsTrigger value="corrected">Corrected</TabsTrigger>
+                            <TabsTrigger value="original">Original</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="annotated" className="mt-4">
+                            <ScrollArea className="h-80 w-full rounded-md border p-4">
+                                <div
+                                    className="prose-lg max-w-none leading-relaxed"
+                                    dangerouslySetInnerHTML={{ __html: feedback.annotated_transcript }}
+                                />
+                            </ScrollArea>
+                        </TabsContent>
+                        <TabsContent value="corrected" className="mt-4">
+                            <ScrollArea className="h-80 w-full rounded-md border p-4">
+                                <div className="prose-lg max-w-none leading-relaxed whitespace-pre-wrap">
+                                    {feedback.corrected_transcript}
+                                </div>
+                            </ScrollArea>
+                        </TabsContent>
+                        <TabsContent value="original" className="mt-4">
+                            <ScrollArea className="h-80 w-full rounded-md border p-4">
+                                <div className="prose-lg max-w-none leading-relaxed whitespace-pre-wrap">
+                                    {feedback.original_transcript}
+                                </div>
+                            </ScrollArea>
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </CardContent>
             <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4">

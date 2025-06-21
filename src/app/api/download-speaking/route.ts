@@ -18,8 +18,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing content for DOCX generation.' }, { status: 400 });
     }
 
-    // Replace class with inline styles for docx compatibility
-    const styledTranscript = feedback.annotated_transcript.replace(/<span class='highlight'>/g, '<span style="color: red; font-weight: bold;">');
+    // Replace classes with inline styles for docx compatibility
+    const styledTranscript = feedback.annotated_transcript
+      .replace(/class='error'/g, "style='background-color: #fee2e2; color: #b91c1c; padding: 2px; border-radius: 3px;'")
+      .replace(/class='correction'/g, "style='background-color: #dcfce7; color: #166534; padding: 2px; border-radius: 3px; font-weight: bold;'");
 
     const fullHtmlContent = `
       <!DOCTYPE html>
@@ -67,6 +69,15 @@ export async function POST(req: NextRequest) {
         <hr />
         <h2>Annotated Transcript</h2>
         <p>${styledTranscript}</p>
+        <br />
+
+        <h2>Corrected Transcript</h2>
+        <p>${feedback.corrected_transcript}</p>
+        <br />
+
+        <h2>Original Transcript</h2>
+        <p>${feedback.original_transcript}</p>
+
       </body>
       </html>
     `;

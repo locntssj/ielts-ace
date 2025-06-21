@@ -26,7 +26,9 @@ const GradeSpeakingOutputSchema = z.object({
         grammar: z.string().describe('Feedback on Grammatical Range and Accuracy.'),
         pronunciation: z.string().describe('Feedback on Pronunciation.'),
     }),
-    annotated_transcript: z.string().describe('The transcript with errors highlighted and corrections added.'),
+    annotated_transcript: z.string().describe("The transcript with errors wrapped in `<span class='error'>` tags and corrections in `<span class='correction'>` tags."),
+    corrected_transcript: z.string().describe("A clean version of the transcript with all corrections applied, without any HTML tags."),
+    original_transcript: z.string().describe("The original, unmodified transcript as provided in the input."),
 });
 export type GradeSpeakingOutput = z.infer<typeof GradeSpeakingOutputSchema>;
 
@@ -70,11 +72,10 @@ const gradeSpeakingPrompt = ai.definePrompt({
 
 2.  **Provide Feedback:** For each of the four criteria, write a brief, constructive feedback paragraph.
 
-3.  **Annotate Transcript:**
-    *   Review the original transcript sentence by sentence.
-    *   If you find an error (grammar, vocabulary, etc.), wrap the incorrect part in \`<span class='highlight'>\` tags. Use single quotes for HTML attributes inside the JSON string.
-    *   Immediately following the closing \`</span>\` tag, add a brief correction or explanation in parentheses, like \`(correction)\`.
-    *   Do not change any parts of the transcript that are correct.
+3.  **Generate Transcripts (3 Versions):**
+    *   **original_transcript:** Return the user's transcript exactly as it was provided.
+    *   **corrected_transcript:** Create a clean, corrected version of the transcript with all grammatical and vocabulary errors fixed. This version should not contain any HTML tags.
+    *   **annotated_transcript:** Review the original transcript. If you find an error, wrap the incorrect part in \`<span class='error'>\` tags. Immediately after, add the correction in \`<span class='correction'>\` tags. For example: "I <span class='error'>goed</span> <span class='correction'>(went)</span> to the store." Leave correct parts unchanged. Use single quotes for HTML attributes.
 
 **Output Format:**
 
@@ -95,7 +96,9 @@ Here is an example of the required JSON format:
     "grammar": "Frequent verb tense and agreement errors.",
     "pronunciation": "Assumed understandable but not expressive."
   },
-  "annotated_transcript": "Well I <span class='highlight'>have saw</span> (should be 'have seen') many cultures..."
+  "annotated_transcript": "Well I <span class='error'>have saw</span> <span class='correction'>(should be 'have seen')</span> many cultures...",
+  "corrected_transcript": "Well I have seen many cultures...",
+  "original_transcript": "Well I have saw many cultures..."
 }
 
 The transcript to grade is:
