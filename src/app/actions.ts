@@ -73,7 +73,7 @@ export async function transcribeAudio(formData: FormData): Promise<{ transcript:
 
     if (error) {
         console.error('Deepgram API Error:', error);
-        return { transcript: '', error: `Deepgram error: ${error.message}` };
+        return { transcript: '', error: 'Transcription failed. Please ensure the audio file is valid, not silent, and in a supported format.' };
     }
     
     const transcript = result?.results?.channels?.[0]?.alternatives?.[0]?.transcript;
@@ -115,7 +115,10 @@ export async function transcribeUrl(url: string): Promise<{ transcript: string; 
 
     if (error) {
       console.error('Deepgram API Error:', error);
-      return { transcript: '', error: `Deepgram error: ${error.message}` };
+      if (error.message.includes('REMOTE_CONTENT_ERROR')) {
+        return { transcript: '', error: 'Failed to fetch audio from the URL. Please check that the URL is correct and publicly accessible.' };
+      }
+      return { transcript: '', error: 'An unknown error occurred during transcription. Please try again.' };
     }
 
     const transcript = result?.results?.channels?.[0]?.alternatives?.[0]?.transcript;
