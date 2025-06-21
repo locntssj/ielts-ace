@@ -42,9 +42,13 @@ Please analyze the following IELTS Writing Task 2 essay in detail. Follow these 
 - Lexical Resource
 - Grammatical Range and Accuracy\n\nFor each:\n- Give a **band score from 1 to 9**
 - Explain the score with clear examples from the essay\n\n---\n\n### 2. Sentence-by-Sentence Correction\n\nGo through the essay **line by line**.\n\nFor each sentence:\n- If there are grammar, vocabulary, logic or structure problems:\n  - **Highlight the problematic part using HTML**:\n    - Wrap error in:  
-      \`<span style="color: red; font-weight: bold">[wrong phrase]</span>\`
+      \`\`\`html
+      <span style="color: red; font-weight: bold">wrong phrase</span>
+      \`\`\`
     - Right after it, add a correction note:  
-      \`<span style="color: green; font-style: italic">([Correction] ...)</span>\`
+      \`\`\`html
+      <span style="color: green; font-style: italic">(...)</span>
+      \`\`\`
 - If the sentence is fine, leave it unchanged.\n\n---\n\n### 3. Output Format\n\nAt the end, return:\n\n1. The **full corrected essay in annotated HTML**
 2. A separate **band score summary block**, formatted like:\n\n\`\`\`html
 <div>

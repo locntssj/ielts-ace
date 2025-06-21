@@ -58,9 +58,13 @@ For each sentence:
 - If there are grammar, vocabulary, logic or structure problems:
   - **Highlight the problematic part using HTML**:
     - Wrap error in:  
-      \`<span style="color: red; font-weight: bold">[wrong phrase]</span>\`
+      \`\`\`html
+      <span style="color: red; font-weight: bold">[wrong phrase]</span>
+      \`\`\`
     - Right after it, add a correction note:  
-      \`<span style="color: green; font-style: italic">([Correction] ...)</span>\`
+      \`\`\`html
+      <span style="color: green; font-style: italic">(...)</span>
+      \`\`\`
 - If the sentence is fine, leave it unchanged.
 
 ---
